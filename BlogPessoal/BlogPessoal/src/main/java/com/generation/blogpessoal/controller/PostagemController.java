@@ -2,6 +2,7 @@ package com.generation.blogpessoal.controller;
 
 import com.generation.blogpessoal.model.Postagem;
 import com.generation.blogpessoal.repository.PostagemRepository;
+import com.generation.blogpessoal.repository.TemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,9 @@ import java.util.List;
 public class PostagemController {
 
     @Autowired
-    private PostagemRepository postagemRepository;
+    private PostagemRepository postagemRepository; // Injeção de dependencia
+    @Autowired
+    private TemaRepository temaRepository; // Injeção de dependencia
 
 
     @GetMapping
@@ -60,12 +63,13 @@ public class PostagemController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePostagem(@PathVariable Long id) {
         try {
-           postagemRepository.deleteById(id);
-           return ResponseEntity.status(204).build();
+            postagemRepository.deleteById(id);
+            return ResponseEntity.status(204).build();
 
         }catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
+
 
 }
