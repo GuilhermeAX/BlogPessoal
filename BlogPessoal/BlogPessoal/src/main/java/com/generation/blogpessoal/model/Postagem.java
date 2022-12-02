@@ -17,6 +17,10 @@ public class Postagem {
     @JsonIgnoreProperties("postagem")
     private Tema tema;
 
+    @ManyToOne
+    @JsonIgnoreProperties("postagem")
+    private Usuario usuario;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
