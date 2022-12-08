@@ -1,6 +1,7 @@
 package com.generation.blogpessoal.controller;
 
 import com.generation.blogpessoal.model.Usuario;
+import com.generation.blogpessoal.model.UsuarioLogin;
 import com.generation.blogpessoal.repository.UsuarioRepository;
 import com.generation.blogpessoal.service.UsuarioService;
 import org.junit.jupiter.api.BeforeAll;
@@ -109,7 +110,7 @@ public class UsuarioControllerTest {
     @Test
     @DisplayName("Buscar Usuário pelo ID")
     public void deveBuscarUsuarioPorId() {
-       usuarioService.cadastrarUsuario(new Usuario(0L,
+        usuarioService.cadastrarUsuario(new Usuario(0L,
                 "Juliana Andrews", "juliana_andrews@email.com.br", "juliana123", ""));
 
 
@@ -123,9 +124,19 @@ public class UsuarioControllerTest {
     @Test
     @DisplayName("Fazer login")
     public void fazerLogin() {
-        Optional<Usuario> usuarioCadastrado = usuarioService.cadastrarUsuario(new Usuario(0L,
-                "Juliana Andrews", "juliana_andrews@email.com.br", "juliana123", ""));
 
-       //usuarioCadastrado.get().getUsuario(), usuarioCadastrado.get().getSenha();
+        usuarioService.cadastrarUsuario(new Usuario(0L,
+                "Admin", "admin@root.com", "rootroot", " "));
+
+        Optional<UsuarioLogin> usuarioLogin = Optional.of(new UsuarioLogin("admim@root.com", "rootroot"));
+        usuarioService.autenticarUsuario(usuarioLogin);
+
+        HttpEntity<UsuarioLogin> corpoRequisicao = new HttpEntity<UsuarioLogin>(new UsuarioLogin("root@root.com",
+                "rootroot"));
+
+        ResponseEntity<UsuarioLogin> resposta = testRestTemplate.withBasicAuth("admin@root.com", "rootroot")
+                .exchange("/usuarios/logar", HttpMethod.POST, corpoRequisicao, UsuarioLogin.class);
+
+        assertEquals(HttpStatus.OK, resposta.getStatusCode());
     }
 }
