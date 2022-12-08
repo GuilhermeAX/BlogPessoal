@@ -29,7 +29,7 @@ public class UsuarioService {
     }
 
     public Optional<Usuario> atualizarUsuario(Usuario usuario) {
-        if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent() && !usuario.getUsuario().matches("[\\w\\-.]+@[\\w\\-]+\\.\\w+\\.?\\w*")) {
+        if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent() /*&& !usuario.getUsuario().matches("[\\w\\-.]+@[\\w\\-]+\\.\\w+\\.?\\w*")*/) {
             usuario.setSenha(criptografarSenha(usuario.getSenha()));
             return Optional.ofNullable(usuarioRepository.save(usuario));//Se retornar um of, tem certeza que optional nao será nulo, ofNullable pode ser que seja nulo
         }
