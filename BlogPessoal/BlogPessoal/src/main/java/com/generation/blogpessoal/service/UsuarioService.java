@@ -1,17 +1,20 @@
 package com.generation.blogpessoal.service;
 
-import com.generation.blogpessoal.model.Usuario;
-import com.generation.blogpessoal.model.UsuarioLogin;
-import com.generation.blogpessoal.repository.UsuarioRepository;
-import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
+import static java.util.Optional.empty;
 
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import static java.util.Optional.empty;
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.generation.blogpessoal.model.Usuario;
+import com.generation.blogpessoal.model.UsuarioLogin;
+import com.generation.blogpessoal.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
@@ -29,11 +32,21 @@ public class UsuarioService {
     }
 
     public Optional<Usuario> atualizarUsuario(Usuario usuario) {
-        if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent() && !usuario.getUsuario().matches("[\\w\\-.]+@[\\w\\-]+\\.\\w+\\.?\\w*")) {
-            usuario.setSenha(criptografarSenha(usuario.getSenha()));
-            return Optional.ofNullable(usuarioRepository.save(usuario));//Se retornar um of, tem certeza que optional nao será nulo, ofNullable pode ser que seja nulo
-        }
-        return Optional.empty();
+        
+        if(usuarioRepository.findById(usuario.getId()).isPresent()) {
+			
+			Optional<Usuario> buscaUsuario = usuarioRepository.findByUsuario(usuario.getUsuario());
+			
+			if ( (buscaUsuario.isPresent()) && ( buscaUsuario.get().getId() != usuario.getId()))
+				throw new ResponseStatusException(
+						HttpStatus.BAD_REQUEST, "Usuário já existe!", null);
+
+			usuario.setSenha(criptografarSenha(usuario.getSenha()));
+
+			return Optional.ofNullable(usuarioRepository.save(usuario));
+			
+		}
+		return Optional.empty();
     }
 
     public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLogin) {
